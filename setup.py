@@ -1,10 +1,19 @@
-#!/usr/bin/env python
-from distutils.core import setup
+#!/usr/bin/env python3
+from setuptools import setup
 
-setup(name='extras_mongoengine',
-      version='0.3.0',
-      description='MongoEngine Extras - Field Types and any other wizardry.',
-      url='https://github.com/MongoEngine/extras-mongoengine/',
-      install_requires=['mongoengine>=0.11.0'],
+
+setup(name='dolead_extras_mongoengine',
+      version='0.0.1',
+      description='Extra stuff for MongoEngine ORM',
+      keywords='mongoengine soft-delete enum',
+      classifiers=[
+          "Programming Language :: Python :: 3",
+          "License :: OSI Approved :: GNU General Public License v3 (GPLv3)"],
+      license="GPLv3",
+      author="François Schmidts",
+      author_email="francois.schmidts@dolead.com",
+      maintainer="François Schmidts",
+      maintainer_email="francois.schmidts@dolead.com",
       packages=['extras_mongoengine'],
+      url='https://github.com/dolead/dolead_entry_points',
 )
