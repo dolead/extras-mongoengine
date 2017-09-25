@@ -81,3 +81,6 @@ class SoftDeleteQuerySetNoCache(QuerySetNoCache, AbstractSoftDeleteMixin):
 
     def no_cache(self):
         return self
+
+    def __len__(self):
+        return self.count()
