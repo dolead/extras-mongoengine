@@ -3,7 +3,7 @@ from setuptools import setup
 
 
 setup(name='dolead_extras_mongoengine',
-      version='0.0.1',
+      version='0.3.1',
       description='Extra stuff for MongoEngine ORM',
       keywords='mongoengine soft-delete enum',
       classifiers=[
