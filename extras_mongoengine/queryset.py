@@ -9,7 +9,7 @@ class AbstractSoftDeleteMixin:
     def initial_query(self):
         try:
             return self._initial_query
-        except AttributeError: # Field has been renammed.
+        except AttributeError:  # Field has been renammed.
             return self._cls_query
 
     def _not_soft_deleted_cond(self, **kwargs):
@@ -62,6 +62,8 @@ class SoftDeleteQuerySet(QuerySet, AbstractSoftDeleteMixin):
         return self
 
     def no_cache(self):
+        if hasattr(self, '_clone_into'):
+            return self._clone_into(SoftDeleteQuerySetNoCache(self._document, self._collection))
         return self.clone_into(SoftDeleteQuerySetNoCache(self._document, self._collection))
 
 
@@ -84,10 +86,9 @@ class SoftDeleteQuerySetNoCache(QuerySetNoCache, AbstractSoftDeleteMixin):
                 q_obj=q_obj, **query)
 
     def cache(self):
-        return self.clone_into(SoftDeleteQuerySet(self._document, self._collection))
-
-    def no_cache(self):
-        return self
+        if hasattr(self, '_clone_into'):
+            return self._clone_into(SoftDeleteQuerySetNoCache(self._document, self._collection))
+        return self.clone_into(SoftDeleteQuerySetNoCache(self._document, self._collection))
 
     def __len__(self):
         return self.count()
