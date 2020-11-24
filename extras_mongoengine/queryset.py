@@ -62,7 +62,7 @@ class SoftDeleteQuerySet(QuerySet, AbstractSoftDeleteMixin):
         return self
 
     def no_cache(self):
-        if hasattr(self, '_clone_into'):
+        if hasattr(self, '_clone_into'):   # Renamed in latest MongoEngine versions
             return self._clone_into(SoftDeleteQuerySetNoCache(self._document, self._collection))
         return self.clone_into(SoftDeleteQuerySetNoCache(self._document, self._collection))
 
@@ -85,8 +85,11 @@ class SoftDeleteQuerySetNoCache(QuerySetNoCache, AbstractSoftDeleteMixin):
         return super(SoftDeleteQuerySetNoCache, self).__call__(
                 q_obj=q_obj, **query)
 
+    def no_cache(self):
+        return self
+
     def cache(self):
-        if hasattr(self, '_clone_into'):
+        if hasattr(self, '_clone_into'):  # Renamed in latest MongoEngine versions
             return self._clone_into(SoftDeleteQuerySetNoCache(self._document, self._collection))
         return self.clone_into(SoftDeleteQuerySetNoCache(self._document, self._collection))
 
