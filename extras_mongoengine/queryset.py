@@ -48,7 +48,7 @@ class SoftDeleteQuerySet(QuerySet, AbstractSoftDeleteMixin):
         not_soft_deleted_conditions = self._not_soft_deleted_cond(**kwargs)
         self.initial_query.update(not_soft_deleted_conditions)
 
-    def __call__(self, q_obj=None, class_check=True, **query):
+    def __call__(self, q_obj=None, **query):
         """A simple wrapper around ~mongoengine.queryset.QuerySet.__call__ that
         allows query parameters to override those written in the initial query.
         """
@@ -56,7 +56,7 @@ class SoftDeleteQuerySet(QuerySet, AbstractSoftDeleteMixin):
         for key in set(query).intersection(soft_delete_attrs):
             del self.initial_query[key]
         return super(SoftDeleteQuerySet, self).__call__(
-                q_obj=q_obj, class_check=class_check, **query)
+                q_obj=q_obj, **query)
 
     def cache(self):
         return self
@@ -73,7 +73,7 @@ class SoftDeleteQuerySetNoCache(QuerySetNoCache, AbstractSoftDeleteMixin):
         not_soft_deleted_conditions = self._not_soft_deleted_cond(**kwargs)
         self.initial_query.update(not_soft_deleted_conditions)
 
-    def __call__(self, q_obj=None, class_check=True, **query):
+    def __call__(self, q_obj=None, **query):
         """A simple wrapper around ~mongoengine.queryset.QuerySet.__call__ that
         allows query parameters to override those written in the initial query.
         """
@@ -81,7 +81,7 @@ class SoftDeleteQuerySetNoCache(QuerySetNoCache, AbstractSoftDeleteMixin):
         for key in set(query).intersection(soft_delete_attrs):
             del self.initial_query[key]
         return super(SoftDeleteQuerySetNoCache, self).__call__(
-                q_obj=q_obj, class_check=class_check, **query)
+                q_obj=q_obj, **query)
 
     def cache(self):
         return self.clone_into(SoftDeleteQuerySet(self._document, self._collection))
