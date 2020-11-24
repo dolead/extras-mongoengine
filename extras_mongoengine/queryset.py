@@ -5,6 +5,13 @@ class AbstractSoftDeleteMixin:
     def __to_mongo(self, key, val):
         return self._document._fields[key].to_mongo(val)
 
+    @property
+    def initial_query(self):
+        try:
+            return self._initial_query
+        except AttributeError: # Field has been renammed.
+            return self._cls_query
+
     def _not_soft_deleted_cond(self, **kwargs):
         """Query conditions for documents that are not soft deleted
         """
@@ -22,15 +29,15 @@ class AbstractSoftDeleteMixin:
     def including_soft_deleted(self):
         """Will clean the queryset from soft_delete notions."""
         soft_delete_attrs = self._document._meta.get('soft_delete', {})
-        for key in set(self._initial_query).intersection(soft_delete_attrs):
-            del self._initial_query[key]
+        for key in set(self.initial_query).intersection(soft_delete_attrs):
+            del self.initial_query[key]
         return self.clone()
 
     @property
     def soft_deleted(self):
         soft_delete_attrs = self._document._meta.get('soft_delete', {})
         for field, sd_value in soft_delete_attrs.items():
-            self._initial_query[field] = self.__to_mongo(field, sd_value)
+            self.initial_query[field] = self.__to_mongo(field, sd_value)
         return self.clone()
 
 
@@ -39,7 +46,7 @@ class SoftDeleteQuerySet(QuerySet, AbstractSoftDeleteMixin):
         super(SoftDeleteQuerySet, self).__init__(*args, **kwargs)
 
         not_soft_deleted_conditions = self._not_soft_deleted_cond(**kwargs)
-        self._initial_query.update(not_soft_deleted_conditions)
+        self.initial_query.update(not_soft_deleted_conditions)
 
     def __call__(self, q_obj=None, class_check=True, **query):
         """A simple wrapper around ~mongoengine.queryset.QuerySet.__call__ that
@@ -47,7 +54,7 @@ class SoftDeleteQuerySet(QuerySet, AbstractSoftDeleteMixin):
         """
         soft_delete_attrs = self._document._meta.get('soft_delete', {})
         for key in set(query).intersection(soft_delete_attrs):
-            del self._initial_query[key]
+            del self.initial_query[key]
         return super(SoftDeleteQuerySet, self).__call__(
                 q_obj=q_obj, class_check=class_check, **query)
 
@@ -64,7 +71,7 @@ class SoftDeleteQuerySetNoCache(QuerySetNoCache, AbstractSoftDeleteMixin):
         super(QuerySetNoCache, self).__init__(*args, **kwargs)
 
         not_soft_deleted_conditions = self._not_soft_deleted_cond(**kwargs)
-        self._initial_query.update(not_soft_deleted_conditions)
+        self.initial_query.update(not_soft_deleted_conditions)
 
     def __call__(self, q_obj=None, class_check=True, **query):
         """A simple wrapper around ~mongoengine.queryset.QuerySet.__call__ that
@@ -72,7 +79,7 @@ class SoftDeleteQuerySetNoCache(QuerySetNoCache, AbstractSoftDeleteMixin):
         """
         soft_delete_attrs = self._document._meta.get('soft_delete', {})
         for key in set(query).intersection(soft_delete_attrs):
-            del self._initial_query[key]
+            del self.initial_query[key]
         return super(SoftDeleteQuerySetNoCache, self).__call__(
                 q_obj=q_obj, class_check=class_check, **query)
 
